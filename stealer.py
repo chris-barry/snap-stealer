@@ -1,8 +1,10 @@
 import urlparse
+from Crypto.Cipher import AES
 
 # List of domains associated with Snapchat.
 domain = ['feelinsonice-hrd.appspot.com', 'data.flurry.com']
 logFile = 'logs.txt'
+AES_KEY = 'M02cnQ51Ji97vwT4'
 
 def start(context, flow):
 	with open(logFile,'a') as myfile:
@@ -30,11 +32,13 @@ def request(context, flow):
 		username = str(form['username'][0])
 		timestamp = str(form['timestamp'][0])
 		request_token = str(form['req_token'][0])
+		data = form['data'][0]
 
 		# Start processing the request.
 		if path == '/bq/upload':
 			myfile.write(username)
 			myfile.write(' is uploading an image\n')
+			saveSnap(data)
 			"""
 			media_id:   YOURUSERNAME~6AABF95C-C466-417B-904D-ED4CC3
 			type:       0 # I sent a picture, so I would imagine 0 is picture.
@@ -97,17 +101,19 @@ def request(context, flow):
 			id:         513637398565409770r
 			"""
 
-		if path == '/bq/blob':
-			myfile.write(username)
-			myfile.write(' is blobing.\n')
-			# Thought: could we manipulate this json and make the time always be 10s?
-			# Thought: could we manipulate this json and make the sender be someone else?
+def decrypt(data):
+	# using AES_KEY and ECB to decrypt
+	c = AES.new(AES_KEY, AES.MODE_ECB)
+	# pkcs5 is used to pad the data
+	padCount = 16 - len(data) % 16
+	# actually decrypt data with pad and key
+	return c.decrypt(data + (chr(padCount) * padCount).encode('utf-8'))
 
-			"""
-			added_friends_timestamp:  1395940738302
-			events:                   [{"eventName":"START","params":{},"ts":1398563914.011596},{"eventName":"OPEN","params":{"type":"NORMAL"},"ts":1398563914.097597},{"eventName":"USER_PREVIEW_STATS","params":{"in_preview_but_expired":0,"in_preview":false,"smart_filters_enabled":false,"formaly_preview_not_in_preview":0},"ts":1398563914.70434},{"eventName":"REQUEST_ENDED","params":{"Time":0.9263189583334679,"Request_Size":197,"Path":"bq\/all_updates","Success":true,"Hit_Cache":false,"Return_Size":17653},"ts":1398563915.630106},{"eventName":"PAGE CAMERA","params":{},"ts":1398563916.667694},{"eventName":"CLOSE","params":{},"ts":1398563926.039474},{"eventName":"OPEN","params":{"type":"NORMAL"},"ts":1398565392.759993},{"eventName":"USER_PREVIEW_STATS","params":{"in_preview_but_expired":0,"in_preview":false,"smart_filters_enabled":false,"formaly_preview_not_in_preview":0},"ts":1398565392.770698},{"eventName":"REQUEST_ENDED","params":{"Time":2.305813916666921,"Request_Size":197,"Path":"bq\/all_updates","Success":true,"Hit_Cache":false,"Return_Size":17653},"ts":1398565395.073266},{"eventName":"NOTIFICATION_WHILE_OPEN","params":{},"ts":1398565413.952243},{"eventName":"REQUEST_ENDED","params":{"Time":1.38770362500054,"Request_Size":197,"Path":"bq\/all_updates","Success":true,"Hit_Cache":false,"Return_Size":17775},"ts":1398565415.343368},{"eventName":"SNAP_RECEIVED","params":{"type":"IMAGE","time":7,"friendCount":20,"id":"513637398565409770r","sender":"snazztasticmatt"},"ts":1398565415.354479},{"eventName":"REQUEST_ENDED","params":{"Time":0.5802297500003988,"Request_Size":200,"Path":"bq\/blob","Success":true,"Hit_Cache":false,"Return_Size":40880},"ts":1398565416.203418},{"eventName":"PAGEFEED","params":{},"ts":1398565419.327751},{"eventName":"PAGE FEED","params":{},"ts":1398565419.328078},{"eventName":"SNAP_VIEW","params":{"type":"IMAGE","time":7,"friendCount":20,"id":"513637398565409770r","sender":"snazztasticmatt"},"ts":1398565420.882285},{"eventName":"SNAP_EXPIRED","params":{"type":"IMAGE","time":7,"friendCount":20,"id":"513637398565409770r","sender":"snazztasticmatt","time_viewed":7.003291958333648},"ts":1398565427.888872}]  
-			json:                     {"513637398565409770r":{"t":1398565420.881927,"sv":7.003291958333648}}
-			"""
+def saveSnap(data):
+	outFile = open("./saved_images/testing.jpg", "w")
+	outFile.write(decrypt(data))
+	outfile.close()
+
 
 def end(context, flow):
 	with open(logFile,'a') as myfile:
