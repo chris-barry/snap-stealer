@@ -4,7 +4,7 @@
 > logs.txt
 
 # Start proxy.
-mitmproxy -s stealer.py
+mitmproxy -s snap-logger.py
 
 # Clean up our mess.
 clear
