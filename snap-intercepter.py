@@ -8,8 +8,10 @@ snapchat_aes_key = 'M02cnQ51Ji97vwT4'
 DOMAINS = ['feelinsonice-hrd.appspot.com', 'data.flurry.com']
 
 def start(context, flow):
-	with open(LOG_FILE,'a') as myfile:
+	myfile = open(LOG_FILE, 'a')
+	try:
 		myfile.write('----- starting interception -----\n')
+<<<<<<< HEAD
 	return
 
 def response(context, flow):
@@ -44,6 +46,31 @@ def request(context, flow):
 			return
 
 	with open(LOG_FILE, 'a') as myfile:
+=======
+	finally:
+		myfile.close()
+
+def response(context, flow):
+	if not (flow.response.request.host in DOMAINS):
+		return
+
+	myfile = open(LOG_FILE, 'a')
+
+	try:
+		# If the data is not from Snapchat, skip analysis.
+		# TODO: Get fancy with responses.
+		myfile.write('Response from Snapchat. OOOW\n')
+	finally:
+		myfile.close()
+
+def request(context, flow):
+	if not (flow.request.host in DOMAINS):
+		return
+
+	myfile = open(LOG_FILE, 'a')
+
+	try:
+>>>>>>> 4165c1f8c395a52ea7b3c5843999ab16892ca914
 		# If the data is not from Snapchat, skip analysis.
 
 		path = str(flow.request.path)
@@ -57,6 +84,7 @@ def request(context, flow):
 			tmp = form.find(mediaIdString)
 			mediaId = form[(tmp + len(mediaIdString)):]
 
+<<<<<<< HEAD
 			# more trimming down to encrypted blob
 			mediaIdStringAfter = 'Content-Disposition: form-data; name="req_token"'
 			tmp = mediaId.find(mediaIdStringAfter)
@@ -76,10 +104,24 @@ def request(context, flow):
 			
 			# saves and decrypts snap
 			saveSnap(data, mediaId)
+=======
+		if path == '/bq/blob':
+			# TODO: Decrypt.
+			myfile.write(username)
+			myfile.write(' is blobing.\n')
+			"""
+			id:         513637398565409770r
+			"""
+	finally:
+		myfile.close()
+>>>>>>> 4165c1f8c395a52ea7b3c5843999ab16892ca914
 
 def end(context, flow):
-	with open(LOG_FILE,'a') as myfile:
+	myfile = open(LOG_FILE, 'a')
+	try:
 		myfile.write('----- ending interception -----\n')
+	finally:
+		myfile.close()
 
 def decrypt(data):
 	# using AES_KEY and ECB to decrypt
