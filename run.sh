@@ -4,7 +4,7 @@
 > logs.txt
 
 # Start proxy.
-mitmproxy -s snap-logger.py
+mitmproxy -s snap-intercepter.py
 
 # Clean up our mess.
-clear
+# clear
