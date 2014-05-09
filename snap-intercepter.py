@@ -104,10 +104,11 @@ def saveSnap(data, path):
 
 	# checks if .jpg
 	if (decryptedData[:4] == '\xFF\xD8\xFF\xE0'):
-		outFile = open("./saved_media/" + path + ".jpg", "w")
+		ext = '.jpg'
 	# checks if .mp4
 	elif (decryptedData[:2] == '\x00\x00'):
-		outFile = open("./saved_media/" + path + ".mp4", "w")
+		ext = '.mp4'
 
+	outFile = open("./saved_media/" + path + ext, "w")
 	outFile.write(decrypt(data))
 	outfile.close()
