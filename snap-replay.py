@@ -25,7 +25,8 @@ def request(context, flow):
 	if not (flow.request.host in DOMAINS and str(flow.request.path) == '/bq/send'):
 		return
 
-	with open(LOG_FILE, 'a') as myfile:
+	myfile = open(LOG_FILE, 'a')
+	try:
 		form = flow.request.get_form_urlencoded()
 		myfile.write('before: ' + str(form['recipient']) + '\n')
 
@@ -39,6 +40,8 @@ def request(context, flow):
 		flow.request.set_form_urlencoded(form)
 
 		myfile.write('after: ' + str(form['recipient']) + '\n')
+	finally:
+		myfile.close()
 
 def end(context, flow):
 	myfile = open(LOG_FILE, 'a')
