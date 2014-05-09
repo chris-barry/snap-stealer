@@ -4,8 +4,11 @@ snapchat_aes_key = 'M02cnQ51Ji97vwT4'
 DOMAINS = ['feelinsonice-hrd.appspot.com', 'data.flurry.com']
 
 def start(context, flow):
-	with open(LOG_FILE,'a') as myfile:
+	myfile = open(LOG_FILE, 'a')
+	try:
 		myfile.write('----- starting replay -----\n')
+	finally:
+		myfile.close()
 
 def response(context, flow):
 	if not (flow.response.request.host in DOMAINS):
@@ -38,6 +41,9 @@ def request(context, flow):
 		myfile.write('after: ' + str(form['recipient']) + '\n')
 
 def end(context, flow):
-	with open(LOG_FILE,'a') as myfile:
+	myfile = open(LOG_FILE, 'a')
+	try:
 		myfile.write('----- ending interception -----\n')
+	finally:
+		myfile.close()
 

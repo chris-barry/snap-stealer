@@ -7,22 +7,33 @@ snapchat_aes_key = 'M02cnQ51Ji97vwT4'
 DOMAINS = ['feelinsonice-hrd.appspot.com', 'data.flurry.com']
 
 def start(context, flow):
-	with open(LOG_FILE,'a') as myfile:
+	myfile = open(LOG_FILE, 'a')
+	try:
 		myfile.write('----- starting interception -----\n')
+	finally:
+		myfile.close()
 
 def response(context, flow):
-	with open(LOG_FILE,'a') as myfile:
+	if not (flow.response.request.host in DOMAINS):
+		return
+
+	myfile = open(LOG_FILE, 'a')
+
+	try:
 		# If the data is not from Snapchat, skip analysis.
-		if not (flow.response.request.host in domain):
-			return
 		# TODO: Get fancy with responses.
 		myfile.write('Response from Snapchat. OOOW\n')
+	finally:
+		myfile.close()
 
 def request(context, flow):
-	with open(LOG_FILE, 'a') as myfile:
+	if not (flow.request.host in DOMAINS):
+		return
+
+	myfile = open(LOG_FILE, 'a')
+
+	try:
 		# If the data is not from Snapchat, skip analysis.
-		if not (flow.request.host in DOMAINS):
-			return
 
 		path = str(flow.request.path)
 		url = str(flow.request.content)
@@ -55,10 +66,15 @@ def request(context, flow):
 			"""
 			id:         513637398565409770r
 			"""
+	finally:
+		myfile.close()
 
 def end(context, flow):
-	with open(LOG_FILE,'a') as myfile:
+	myfile = open(LOG_FILE, 'a')
+	try:
 		myfile.write('----- ending interception -----\n')
+	finally:
+		myfile.close()
 
 def decrypt(data):
 	# using AES_KEY and ECB to decrypt

@@ -6,8 +6,11 @@ snapchat_aes_key = 'M02cnQ51Ji97vwT4'
 DOMAINS = ['feelinsonice-hrd.appspot.com', 'data.flurry.com']
 
 def start(context, flow):
-	with open(LOG_FILE, 'a') as myfile:
+	myfile = open(LOG_FILE, 'a')
+	try:
 		myfile.write('----- starting logging -----\n')
+	finally:
+		myfile.close();
 		
 def response(context, flow):
 	if not (flow.response.request.host in DOMAINS):
@@ -24,8 +27,10 @@ def request(context, flow):
 	# If the data is not from Snapchat, skip analysis.
 	if not (flow.request.host in DOMAINS):
 		return
+	
+	myfile = open(LOG_FILE, 'a')
 
-	with open(LOG_FILE, 'a') as myfile:
+	try:
 		path = str(flow.request.path)
 		url = str(flow.request.content)
 		form = urlparse.parse_qs(url)
@@ -94,8 +99,13 @@ def request(context, flow):
 			"""
 			id:         513637398565409770r
 			"""
+	finally:
+		myfile.close()
 
 def end(context, flow):
-	with open(LOG_FILE,'a') as myfile:
+	myfile = open(LOG_FILE, 'a')
+	try:
 		myfile.write('----- ending -----\n')
+	finally:
+		myfile.close()
 
