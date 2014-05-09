@@ -1,6 +1,5 @@
 import urlparse
 from Crypto.Cipher import AES
-import cStringIO
 
 # Globals
 LOG_FILE = 'logs.txt'
@@ -11,7 +10,8 @@ def start(context, flow):
 	myfile = open(LOG_FILE, 'a')
 	try:
 		myfile.write('----- starting interception -----\n')
-<<<<<<< HEAD
+	finally:
+		myfile.close()
 	return
 
 def response(context, flow):
@@ -20,7 +20,9 @@ def response(context, flow):
 		return
 
 	# opens log file
-	with open(LOG_FILE,'a') as myfile:
+	myfile = open(LOG_FILE, 'a')
+
+	try:
 		path = str(flow.request.path)
 
 		# received snaps
@@ -36,43 +38,17 @@ def response(context, flow):
 
 			# saves and decrypts snap to a given pictId
 			saveSnap(blob, picId)
-			return 
-
-	myfile.close
-	myfile.write('Response from Snapchat. OOOW\n')
-
-def request(context, flow):
-	if not (flow.request.host in DOMAINS):
-			return
-
-	with open(LOG_FILE, 'a') as myfile:
-=======
-	finally:
-		myfile.close()
-
-def response(context, flow):
-	if not (flow.response.request.host in DOMAINS):
-		return
-
-	myfile = open(LOG_FILE, 'a')
-
-	try:
-		# If the data is not from Snapchat, skip analysis.
-		# TODO: Get fancy with responses.
-		myfile.write('Response from Snapchat. OOOW\n')
 	finally:
 		myfile.close()
 
 def request(context, flow):
+	# If the data is not from Snapchat, skip analysis.
 	if not (flow.request.host in DOMAINS):
 		return
 
 	myfile = open(LOG_FILE, 'a')
 
 	try:
->>>>>>> 4165c1f8c395a52ea7b3c5843999ab16892ca914
-		# If the data is not from Snapchat, skip analysis.
-
 		path = str(flow.request.path)
 		form = str(flow.request.content)
 
@@ -84,7 +60,6 @@ def request(context, flow):
 			tmp = form.find(mediaIdString)
 			mediaId = form[(tmp + len(mediaIdString)):]
 
-<<<<<<< HEAD
 			# more trimming down to encrypted blob
 			mediaIdStringAfter = 'Content-Disposition: form-data; name="req_token"'
 			tmp = mediaId.find(mediaIdStringAfter)
@@ -104,17 +79,8 @@ def request(context, flow):
 			
 			# saves and decrypts snap
 			saveSnap(data, mediaId)
-=======
-		if path == '/bq/blob':
-			# TODO: Decrypt.
-			myfile.write(username)
-			myfile.write(' is blobing.\n')
-			"""
-			id:         513637398565409770r
-			"""
 	finally:
 		myfile.close()
->>>>>>> 4165c1f8c395a52ea7b3c5843999ab16892ca914
 
 def end(context, flow):
 	myfile = open(LOG_FILE, 'a')
