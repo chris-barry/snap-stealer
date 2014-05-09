@@ -10,19 +10,22 @@ def start(context, flow):
 		myfile.write('----- starting logging -----\n')
 		
 def response(context, flow):
+	if not (flow.response.request.host in DOMAINS):
+		return
+
+	"""
 	with open(LOG_FILE, 'a') as myfile:
 		# If the data is not from Snapchat, skip analysis.
-		if not (flow.response.request.host in DOMAINS):
-			return
 		# TODO: Get fancy with responses.
-		#myfile.write('Response from Snapchat. OOOW\n')
+		myfile.write('Response from Snapchat. OOOW\n')
+	"""
 
 def request(context, flow):
-	with open(LOG_FILE, 'a') as myfile:
-		# If the data is not from Snapchat, skip analysis.
-		if not (flow.request.host in DOMAINS):
-			return
+	# If the data is not from Snapchat, skip analysis.
+	if not (flow.request.host in DOMAINS):
+		return
 
+	with open(LOG_FILE, 'a') as myfile:
 		path = str(flow.request.path)
 		url = str(flow.request.content)
 		form = urlparse.parse_qs(url)
